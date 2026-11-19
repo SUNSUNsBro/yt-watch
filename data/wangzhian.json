@@ -1,8 +1,12 @@
 {
   "channel": "@wangzhian",
   "channel_id": "UCBKDRq35-L8xev4O7ZqBeLg",
-  "checked_at": "2026-11-19T01:02:05Z",
+  "checked_at": "2026-11-19T09:04:27Z",
   "videos": [
+    {
+      "id": "Dc-oQcVmDm4",
+      "published": "2026-11-19T02:02:19+00:00"
+    },
     {
       "id": "fyN_v12Xz7M",
       "published": "2026-11-19T00:49:11+00:00"
@@ -58,10 +62,6 @@
     {
       "id": "-Y4JP1R0IWM",
       "published": "2026-11-14T12:24:39+00:00"
-    },
-    {
-      "id": "_S3CZ2VziJM",
-      "published": "2026-11-13T12:00:38+00:00"
     }
   ]
 }
