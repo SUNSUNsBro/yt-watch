@@ -48,23 +48,131 @@ jobs:
               sys.exit("channelId not found; page format may have changed")
           cid = m.group(1)
 
+          def extract_initial_data(page: str):
+              idx = page.find("ytInitialData")
+              if idx < 0:
+                  return None
+              start = page.find("{", idx)
+              if start < 0:
+                  return None
+              depth = 0
+              in_str = False
+              esc = False
+              for j in range(start, len(page)):
+                  c = page[j]
+                  if in_str:
+                      if esc:
+                          esc = False
+                      elif c == "\\":
+                          esc = True
+                      elif c == '"':
+                          in_str = False
+                  else:
+                      if c == '"':
+                          in_str = True
+                      elif c == "{":
+                          depth += 1
+                      elif c == "}":
+                          depth -= 1
+                          if depth == 0:
+                              try:
+                                  return json.loads(page[start:j + 1])
+                              except Exception:
+                                  return None
+              return None
+
+          initial = extract_initial_data(html)
+          if not initial:
+              sys.exit("ytInitialData not found; page format may have changed")
+
+          def badge_labels(obj):
+              labels = []
+              for b in (obj.get("badges") or []):
+                  if not isinstance(b, dict):
+                      continue
+                  mr = b.get("metadataBadgeRenderer") or {}
+                  label = mr.get("label")
+                  if label:
+                      labels.append(str(label))
+              return labels
+
+          found = []
+          def walk(obj):
+              if isinstance(obj, dict):
+                  vid = obj.get("videoId")
+                  if isinstance(vid, str) and len(vid) == 11:
+                      pt = obj.get("publishedTimeText") or {}
+                      rel = pt.get("simpleText") if isinstance(pt, dict) else ""
+                      labels = badge_labels(obj)
+                      if rel or labels or obj.get("lengthText"):
+                          found.append({"id": vid, "rel": rel or "", "badges": labels})
+                  for v in obj.values():
+                      walk(v)
+              elif isinstance(obj, list):
+                  for v in obj:
+                      walk(v)
+
+          walk(initial)
+          items = []
+          seen_ids = set()
+          for it in found:
+              if it["id"] in seen_ids:
+                  continue
+              seen_ids.add(it["id"])
+              items.append(it)
+              if len(items) >= 30:
+                  break
+          if not items:
+              sys.exit("channel list parsed but no videos found")
+
           xml = get(f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}")
           ns = {
               "a": "http://www.w3.org/2005/Atom",
               "yt": "http://www.youtube.com/xml/schemas/2015",
           }
           root = ET.fromstring(xml)
-          videos = []
-          for e in root.findall("a:entry", ns)[:15]:
+          rss = {}
+          for e in root.findall("a:entry", ns):
               vid = e.findtext("yt:videoId", namespaces=ns)
-              if not vid:
-                  continue
+              if vid:
+                  rss[vid] = e.findtext("a:published", namespaces=ns) or ""
+
+          def rel_delta(text: str):
+              m2 = re.search(
+                  r"(\d+)\s*(秒钟|秒|分钟|小时|天|周|个月|年|second|minute|hour|day|week|month|year)",
+                  text or "",
+                  re.IGNORECASE,
+              )
+              if not m2:
+                  return None
+              n = int(m2.group(1))
+              unit = m2.group(2).lower()
+              scale = {
+                  "秒": 1, "秒钟": 1, "分钟": 60, "小时": 3600, "天": 86400,
+                  "周": 604800, "个月": 2592000, "年": 31536000,
+                  "second": 1, "minute": 60, "hour": 3600, "day": 86400,
+                  "week": 604800, "month": 2592000, "year": 31536000,
+              }
+              seconds = scale.get(unit)
+              if not seconds:
+                  return None
+              return datetime.timedelta(seconds=n * seconds)
+
+          now = datetime.datetime.now(datetime.timezone.utc)
+          videos = []
+          for it in items:
+              approx = ""
+              delta = rel_delta(it["rel"])
+              if delta:
+                  approx = (now - delta).strftime("%Y-%m-%dT%H:%M:%SZ")
               videos.append({
-                  "id": vid,
-                  "published": e.findtext("a:published", namespaces=ns) or "",
+                  "id": it["id"],
+                  "published": rss.get(it["id"], ""),
+                  "published_approx": approx,
+                  "published_text": it["rel"],
+                  "members_only": False,
+                  "_badge": any(("会员" in b) or ("member" in b.lower()) for b in it["badges"]),
               })
-          if not videos:
-              sys.exit("RSS parsed but no videos found")
 
           path = pathlib.Path("data/wangzhian.json")
           previous = {}
@@ -76,7 +184,6 @@ jobs:
                   previous = {}
 
           def members_only(vid: str):
-              """True if the video is currently gated to channel members."""
               try:
                   page = get(f"https://www.youtube.com/watch?v={vid}&hl=en&gl=US")
               except Exception:
@@ -85,14 +192,17 @@ jobs:
                   return True
               if '"isMembersOnly":true' in page or '"sponsorOnly":true' in page:
                   return True
-              m2 = re.search(r'"playabilityStatus":\s*\{"status":"[^"]+","reason":"([^"]+)"', page)
-              if m2 and "member" in m2.group(1).lower():
+              m3 = re.search(r'"playabilityStatus":\s*\{"status":"[^"]+","reason":"([^"]+)"', page)
+              if m3 and ("member" in m3.group(1).lower() or "会员" in m3.group(1)):
                   return True
               return False
 
           checked = 0
           for v in videos:
               vid = v["id"]
+              if v.pop("_badge", False):
+                  v["members_only"] = True
+                  continue
               old_flag = previous.get(vid, {}).get("members_only")
               old_known = isinstance(old_flag, bool)
               if old_known and old_flag is False:
@@ -110,7 +220,7 @@ jobs:
           data = {
               "channel": "@wangzhian",
               "channel_id": cid,
-              "checked_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+              "checked_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
               "videos": videos,
           }
           path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
