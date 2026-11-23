@@ -1,81 +1,216 @@
 {
   "channel": "@wangzhian",
   "channel_id": "UCBKDRq35-L8xev4O7ZqBeLg",
-  "checked_at": "2026-11-23T08:09:58Z",
+  "checked_at": "2026-11-23T08:25:05Z",
   "videos": [
     {
-      "id": "S1vpdmwoWk0",
-      "published": "2026-11-23T06:24:47+00:00",
-      "members_only": false
-    },
-    {
-      "id": "RUGl1lIs7zg",
-      "published": "2026-11-23T00:34:36+00:00",
-      "members_only": false
+      "id": "ESMb3rFGEcg",
+      "published": "",
+      "published_approx": "2026-11-23T04:25:05Z",
+      "published_text": "4 hours ago",
+      "members_only": true
     },
     {
       "id": "6bJTkzQ3YKs",
       "published": "2026-11-22T12:00:09+00:00",
+      "published_approx": "2026-11-22T12:25:05Z",
+      "published_text": "20 hours ago",
       "members_only": false
     },
     {
-      "id": "VAsCqBsmPG4",
-      "published": "2026-11-22T02:44:14+00:00",
-      "members_only": false
-    },
-    {
-      "id": "26_T-6pKNVY",
-      "published": "2026-11-21T11:03:04+00:00",
-      "members_only": false
+      "id": "pHAjBOYz1WI",
+      "published": "",
+      "published_approx": "2026-11-22T08:25:05Z",
+      "published_text": "1 day ago",
+      "members_only": true
     },
     {
       "id": "w2PYWJpZ93I",
       "published": "2026-11-21T08:02:16+00:00",
+      "published_approx": "2026-11-21T08:25:05Z",
+      "published_text": "2 days ago",
       "members_only": false
     },
     {
       "id": "GdIFoLDQvDI",
       "published": "2026-11-20T12:00:12+00:00",
+      "published_approx": "2026-11-21T08:25:05Z",
+      "published_text": "2 days ago",
       "members_only": false
     },
     {
       "id": "wXz9408JIO8",
       "published": "2026-11-20T04:18:42+00:00",
+      "published_approx": "2026-11-20T08:25:05Z",
+      "published_text": "3 days ago",
       "members_only": false
     },
     {
       "id": "ownAyEu2pZk",
       "published": "2026-11-19T12:00:15+00:00",
+      "published_approx": "2026-11-20T08:25:05Z",
+      "published_text": "3 days ago",
       "members_only": false
     },
     {
       "id": "L2h6jVJykeE",
       "published": "2026-11-19T11:43:54+00:00",
-      "members_only": false
-    },
-    {
-      "id": "BRYMc01cka4",
-      "published": "2026-11-19T09:35:49+00:00",
-      "members_only": false
-    },
-    {
-      "id": "Dc-oQcVmDm4",
-      "published": "2026-11-19T02:02:19+00:00",
-      "members_only": false
-    },
-    {
-      "id": "fyN_v12Xz7M",
-      "published": "2026-11-19T00:49:11+00:00",
+      "published_approx": "2026-11-20T08:25:05Z",
+      "published_text": "3 days ago",
       "members_only": false
     },
     {
       "id": "BIZIe-AMR8U",
       "published": "2026-11-18T12:00:12+00:00",
+      "published_approx": "2026-11-19T08:25:05Z",
+      "published_text": "4 days ago",
       "members_only": false
     },
     {
       "id": "7VMykwqKmu4",
       "published": "2026-11-18T11:54:06+00:00",
+      "published_approx": "2026-11-19T08:25:05Z",
+      "published_text": "4 days ago",
+      "members_only": false
+    },
+    {
+      "id": "JXIl18ozbec",
+      "published": "",
+      "published_approx": "2026-11-19T08:25:05Z",
+      "published_text": "4 days ago",
+      "members_only": false
+    },
+    {
+      "id": "w9NvZuGyedY",
+      "published": "",
+      "published_approx": "2026-11-18T08:25:05Z",
+      "published_text": "5 days ago",
+      "members_only": false
+    },
+    {
+      "id": "AV8r3qrOpiY",
+      "published": "",
+      "published_approx": "2026-11-18T08:25:05Z",
+      "published_text": "5 days ago",
+      "members_only": false
+    },
+    {
+      "id": "ZX2oGwkNBEU",
+      "published": "",
+      "published_approx": "2026-11-17T08:25:05Z",
+      "published_text": "6 days ago",
+      "members_only": false
+    },
+    {
+      "id": "Sz_X8EuGWDw",
+      "published": "",
+      "published_approx": "2026-11-17T08:25:05Z",
+      "published_text": "6 days ago",
+      "members_only": false
+    },
+    {
+      "id": "uAPlpIac2X0",
+      "published": "",
+      "published_approx": "2026-11-15T08:25:05Z",
+      "published_text": "8 days ago",
+      "members_only": false
+    },
+    {
+      "id": "_S3CZ2VziJM",
+      "published": "",
+      "published_approx": "2026-11-14T08:25:05Z",
+      "published_text": "9 days ago",
+      "members_only": false
+    },
+    {
+      "id": "oumJNyXKPyw",
+      "published": "",
+      "published_approx": "2026-11-13T08:25:05Z",
+      "published_text": "10 days ago",
+      "members_only": false
+    },
+    {
+      "id": "7jrmz9wVVMY",
+      "published": "",
+      "published_approx": "2026-11-11T08:25:05Z",
+      "published_text": "12 days ago",
+      "members_only": true
+    },
+    {
+      "id": "SPfD5pGG8U0",
+      "published": "",
+      "published_approx": "2026-11-11T08:25:05Z",
+      "published_text": "12 days ago",
+      "members_only": false
+    },
+    {
+      "id": "TSEq4qeFHHA",
+      "published": "",
+      "published_approx": "2026-11-10T08:25:05Z",
+      "published_text": "13 days ago",
+      "members_only": false
+    },
+    {
+      "id": "n00o7KbHv-g",
+      "published": "",
+      "published_approx": "2026-11-09T08:25:05Z",
+      "published_text": "2 weeks ago",
+      "members_only": false
+    },
+    {
+      "id": "2npfb6jvAPE",
+      "published": "",
+      "published_approx": "2026-11-09T08:25:05Z",
+      "published_text": "2 weeks ago",
+      "members_only": false
+    },
+    {
+      "id": "_wGBPAYMA-I",
+      "published": "",
+      "published_approx": "2026-11-09T08:25:05Z",
+      "published_text": "2 weeks ago",
+      "members_only": false
+    },
+    {
+      "id": "5s_SJP6nzAA",
+      "published": "",
+      "published_approx": "2026-11-09T08:25:05Z",
+      "published_text": "2 weeks ago",
+      "members_only": false
+    },
+    {
+      "id": "ktrTjKu7W1M",
+      "published": "",
+      "published_approx": "2026-11-09T08:25:05Z",
+      "published_text": "2 weeks ago",
+      "members_only": false
+    },
+    {
+      "id": "CviEmya4cKs",
+      "published": "",
+      "published_approx": "2026-11-09T08:25:05Z",
+      "published_text": "2 weeks ago",
+      "members_only": false
+    },
+    {
+      "id": "io8fnuC6_YU",
+      "published": "",
+      "published_approx": "2026-11-02T08:25:05Z",
+      "published_text": "3 weeks ago",
+      "members_only": true
+    },
+    {
+      "id": "wdpqI5lfwD4",
+      "published": "",
+      "published_approx": "2026-11-02T08:25:05Z",
+      "published_text": "3 weeks ago",
+      "members_only": false
+    },
+    {
+      "id": "RcqUoskov2s",
+      "published": "",
+      "published_approx": "2026-11-02T08:25:05Z",
+      "published_text": "3 weeks ago",
       "members_only": false
     }
   ]
