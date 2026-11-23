@@ -49,41 +49,75 @@ jobs:
           cid = m.group(1)
 
           def extract_initial_data(page: str):
-              idx = page.find("ytInitialData")
-              if idx < 0:
-                  return None
-              start = page.find("{", idx)
-              if start < 0:
-                  return None
-              depth = 0
-              in_str = False
-              esc = False
-              for j in range(start, len(page)):
-                  c = page[j]
-                  if in_str:
-                      if esc:
-                          esc = False
-                      elif c == "\\":
-                          esc = True
-                      elif c == '"':
-                          in_str = False
-                  else:
-                      if c == '"':
-                          in_str = True
-                      elif c == "{":
-                          depth += 1
-                      elif c == "}":
-                          depth -= 1
-                          if depth == 0:
-                              try:
-                                  return json.loads(page[start:j + 1])
-                              except Exception:
-                                  return None
-              return None
+              best = None
+              best_score = -1
+              idx = 0
+              while True:
+                  idx = page.find("ytInitialData", idx)
+                  if idx < 0:
+                      break
+                  start = page.find("{", idx)
+                  if start >= 0:
+                      depth = 0
+                      in_str = False
+                      esc = False
+                      for j in range(start, len(page)):
+                          c = page[j]
+                          if in_str:
+                              if esc:
+                                  esc = False
+                              elif c == "\\":
+                                  esc = True
+                              elif c == '"':
+                                  in_str = False
+                          else:
+                              if c == '"':
+                                  in_str = True
+                              elif c == "{":
+                                  depth += 1
+                              elif c == "}":
+                                  depth -= 1
+                                  if depth == 0:
+                                      try:
+                                          obj = json.loads(page[start:j + 1])
+                                      except Exception:
+                                          obj = None
+                                      if obj is not None:
+                                          raw = json.dumps(obj, ensure_ascii=False)
+                                          score = raw.count('"contentId"') + raw.count('"videoId"')
+                                          if score > best_score:
+                                              best_score = score
+                                              best = obj
+                                      break
+                  idx += len("ytInitialData")
+              return best
 
           initial = extract_initial_data(html)
           if not initial:
               sys.exit("ytInitialData not found; page format may have changed")
+
+          REL_RE = re.compile(
+              r"(\d+)\s*(秒钟|秒|分钟|小时|天|周|个月|年|seconds?|minutes?|hours?|days?|weeks?|months?|years?)\s*(?:前|ago)?",
+              re.IGNORECASE,
+          )
+          MEMBER_LABELS = {
+              "会员专享", "会员抢先看", "会员抢先观看",
+              "Members only", "Members first", "BADGE_MEMBERS_ONLY",
+          }
+
+          def strings_in(obj):
+              out = []
+              def walk_str(o):
+                  if isinstance(o, str):
+                      out.append(o)
+                  elif isinstance(o, list):
+                      for v in o:
+                          walk_str(v)
+                  elif isinstance(o, dict):
+                      for v in o.values():
+                          walk_str(v)
+              walk_str(obj)
+              return out
 
           def badge_labels(obj):
               labels = []
@@ -96,16 +130,29 @@ jobs:
                       labels.append(str(label))
               return labels
 
-          found = []
+          lockups = []
+          legacy = []
           def walk(obj):
               if isinstance(obj, dict):
+                  cid2 = obj.get("contentId")
+                  if isinstance(cid2, str) and len(cid2) == 11:
+                      ss = strings_in(obj)
+                      rel = ""
+                      for s in ss:
+                          t = s.strip()
+                          if len(t) < 30 and REL_RE.fullmatch(t):
+                              rel = t
+                              break
+                      member = any(s.strip() in MEMBER_LABELS for s in ss)
+                      lockups.append({"id": cid2, "rel": rel, "member": member})
                   vid = obj.get("videoId")
                   if isinstance(vid, str) and len(vid) == 11:
                       pt = obj.get("publishedTimeText") or {}
                       rel = pt.get("simpleText") if isinstance(pt, dict) else ""
                       labels = badge_labels(obj)
+                      member = any(b.strip() in MEMBER_LABELS for b in labels)
                       if rel or labels or obj.get("lengthText"):
-                          found.append({"id": vid, "rel": rel or "", "badges": labels})
+                          legacy.append({"id": vid, "rel": rel or "", "member": member})
                   for v in obj.values():
                       walk(v)
               elif isinstance(obj, list):
@@ -113,9 +160,10 @@ jobs:
                       walk(v)
 
           walk(initial)
+          pool = lockups if len(lockups) >= 5 else legacy
           items = []
           seen_ids = set()
-          for it in found:
+          for it in pool:
               if it["id"] in seen_ids:
                   continue
               seen_ids.add(it["id"])
@@ -138,11 +186,7 @@ jobs:
                   rss[vid] = e.findtext("a:published", namespaces=ns) or ""
 
           def rel_delta(text: str):
-              m2 = re.search(
-                  r"(\d+)\s*(秒钟|秒|分钟|小时|天|周|个月|年|second|minute|hour|day|week|month|year)",
-                  text or "",
-                  re.IGNORECASE,
-              )
+              m2 = REL_RE.search(text or "")
               if not m2:
                   return None
               n = int(m2.group(1))
@@ -150,8 +194,10 @@ jobs:
               scale = {
                   "秒": 1, "秒钟": 1, "分钟": 60, "小时": 3600, "天": 86400,
                   "周": 604800, "个月": 2592000, "年": 31536000,
-                  "second": 1, "minute": 60, "hour": 3600, "day": 86400,
-                  "week": 604800, "month": 2592000, "year": 31536000,
+                  "second": 1, "seconds": 1, "minute": 60, "minutes": 60,
+                  "hour": 3600, "hours": 3600, "day": 86400, "days": 86400,
+                  "week": 604800, "weeks": 604800, "month": 2592000, "months": 2592000,
+                  "year": 31536000, "years": 31536000,
               }
               seconds = scale.get(unit)
               if not seconds:
@@ -170,8 +216,7 @@ jobs:
                   "published": rss.get(it["id"], ""),
                   "published_approx": approx,
                   "published_text": it["rel"],
-                  "members_only": False,
-                  "_badge": any(("会员" in b) or ("member" in b.lower()) for b in it["badges"]),
+                  "members_only": bool(it["member"]),
               })
 
           path = pathlib.Path("data/wangzhian.json")
@@ -200,13 +245,11 @@ jobs:
           checked = 0
           for v in videos:
               vid = v["id"]
-              if v.pop("_badge", False):
-                  v["members_only"] = True
+              if v["members_only"]:
                   continue
               old_flag = previous.get(vid, {}).get("members_only")
               old_known = isinstance(old_flag, bool)
               if old_known and old_flag is False:
-                  v["members_only"] = False
                   continue
               flag = members_only(vid)
               checked += 1
