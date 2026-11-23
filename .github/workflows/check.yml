@@ -26,6 +26,7 @@ jobs:
           import pathlib
           import re
           import sys
+          import time
           import urllib.request
           import xml.etree.ElementTree as ET
 
@@ -66,6 +67,45 @@ jobs:
               sys.exit("RSS parsed but no videos found")
 
           path = pathlib.Path("data/wangzhian.json")
+          previous = {}
+          if path.exists():
+              try:
+                  old = json.loads(path.read_text(encoding="utf-8"))
+                  previous = {v["id"]: v for v in old.get("videos", []) if v.get("id")}
+              except Exception:
+                  previous = {}
+
+          def members_only(vid: str):
+              """True if the video is currently gated to channel members."""
+              try:
+                  page = get(f"https://www.youtube.com/watch?v={vid}&hl=en&gl=US")
+              except Exception:
+                  return None
+              if '"BADGE_STYLE_TYPE_MEMBERS_ONLY"' in page:
+                  return True
+              if '"isMembersOnly":true' in page or '"sponsorOnly":true' in page:
+                  return True
+              m2 = re.search(r'"playabilityStatus":\s*\{"status":"[^"]+","reason":"([^"]+)"', page)
+              if m2 and "member" in m2.group(1).lower():
+                  return True
+              return False
+
+          checked = 0
+          for v in videos:
+              vid = v["id"]
+              old_flag = previous.get(vid, {}).get("members_only")
+              old_known = isinstance(old_flag, bool)
+              if old_known and old_flag is False:
+                  v["members_only"] = False
+                  continue
+              flag = members_only(vid)
+              checked += 1
+              time.sleep(0.3)
+              if flag is None:
+                  v["members_only"] = old_flag if old_known else False
+              else:
+                  v["members_only"] = flag
+
           path.parent.mkdir(parents=True, exist_ok=True)
           data = {
               "channel": "@wangzhian",
@@ -74,7 +114,8 @@ jobs:
               "videos": videos,
           }
           path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-          print(f"wrote {len(videos)} videos, channel {cid}")
+          gated = sum(1 for v in videos if v.get("members_only"))
+          print(f"wrote {len(videos)} videos, checked {checked}, members-only {gated}, channel {cid}")
           PY
 
       - name: Commit
