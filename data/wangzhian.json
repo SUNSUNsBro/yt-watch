@@ -1,67 +1,82 @@
 {
   "channel": "@wangzhian",
   "channel_id": "UCBKDRq35-L8xev4O7ZqBeLg",
-  "checked_at": "2026-11-23T01:54:52Z",
+  "checked_at": "2026-11-23T08:09:58Z",
   "videos": [
     {
+      "id": "S1vpdmwoWk0",
+      "published": "2026-11-23T06:24:47+00:00",
+      "members_only": false
+    },
+    {
       "id": "RUGl1lIs7zg",
-      "published": "2026-11-23T00:34:36+00:00"
+      "published": "2026-11-23T00:34:36+00:00",
+      "members_only": false
     },
     {
       "id": "6bJTkzQ3YKs",
-      "published": "2026-11-22T12:00:09+00:00"
+      "published": "2026-11-22T12:00:09+00:00",
+      "members_only": false
     },
     {
       "id": "VAsCqBsmPG4",
-      "published": "2026-11-22T02:44:14+00:00"
+      "published": "2026-11-22T02:44:14+00:00",
+      "members_only": false
     },
     {
       "id": "26_T-6pKNVY",
-      "published": "2026-11-21T11:03:04+00:00"
+      "published": "2026-11-21T11:03:04+00:00",
+      "members_only": false
     },
     {
       "id": "w2PYWJpZ93I",
-      "published": "2026-11-21T08:02:16+00:00"
+      "published": "2026-11-21T08:02:16+00:00",
+      "members_only": false
     },
     {
       "id": "GdIFoLDQvDI",
-      "published": "2026-11-20T12:00:12+00:00"
+      "published": "2026-11-20T12:00:12+00:00",
+      "members_only": false
     },
     {
       "id": "wXz9408JIO8",
-      "published": "2026-11-20T04:18:42+00:00"
+      "published": "2026-11-20T04:18:42+00:00",
+      "members_only": false
     },
     {
       "id": "ownAyEu2pZk",
-      "published": "2026-11-19T12:00:15+00:00"
+      "published": "2026-11-19T12:00:15+00:00",
+      "members_only": false
     },
     {
       "id": "L2h6jVJykeE",
-      "published": "2026-11-19T11:43:54+00:00"
+      "published": "2026-11-19T11:43:54+00:00",
+      "members_only": false
     },
     {
       "id": "BRYMc01cka4",
-      "published": "2026-11-19T09:35:49+00:00"
+      "published": "2026-11-19T09:35:49+00:00",
+      "members_only": false
     },
     {
       "id": "Dc-oQcVmDm4",
-      "published": "2026-11-19T02:02:19+00:00"
+      "published": "2026-11-19T02:02:19+00:00",
+      "members_only": false
     },
     {
       "id": "fyN_v12Xz7M",
-      "published": "2026-11-19T00:49:11+00:00"
+      "published": "2026-11-19T00:49:11+00:00",
+      "members_only": false
     },
     {
       "id": "BIZIe-AMR8U",
-      "published": "2026-11-18T12:00:12+00:00"
+      "published": "2026-11-18T12:00:12+00:00",
+      "members_only": false
     },
     {
       "id": "7VMykwqKmu4",
-      "published": "2026-11-18T11:54:06+00:00"
-    },
-    {
-      "id": "JXIl18ozbec",
-      "published": "2026-11-18T10:01:03+00:00"
+      "published": "2026-11-18T11:54:06+00:00",
+      "members_only": false
     }
   ]
 }
